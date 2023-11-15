@@ -1,0 +1,7 @@
+javascript:alert(1)
+console.log(1)
+prompt(1)
+javascript:confirm(1)
+alert(document.cookie)
+javascript:prompt(1)
+javascript:console.log(1)
