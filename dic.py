@@ -1,6 +1,7 @@
 # ................................dictionary..............................
 import os
 import numpy as np
+import random
 from sacremoses import MosesTokenizer
 #https://github.com/wanchichen/GA-Text-Summarization/blob/main/src/vocab_1000.txt
 
@@ -9,7 +10,7 @@ from sacremoses import MosesTokenizer
 
 def read_vocab(num):
     dictionary = list()
-    with open(f"vocab_{num}.txt", "r", encoding='utf-8') as in_file:
+    with open(f"{num}.txt", "r", encoding='utf-8') as in_file:
         vocab_lines = in_file.readlines()
 
         for line in vocab_lines:
@@ -51,6 +52,35 @@ def create_dictionary(words, weights):
         dictionary[words[i]] = weights[i]
 
     return dictionary
+def gen_example(tag , event, malicous):
+    return tags[0]+" "+event[0]+malicous[0]+">"
 
 # build_vocab()
-# print(read_vocab(1000))
+event = read_vocab("event")
+tags= read_vocab("tag")
+malicous = read_vocab("malicous")
+# print(event)
+# print(tags)
+# print(malicous)
+
+# print(gen_example(tags,event, malicous))
+
+
+class grammer:
+     def __init__(self):
+        self.texts = "abc "
+        self.spaces = ' ' 
+        self.events = read_vocab("event")
+        self.asigns =  ['=']
+        self.payloads = read_vocab("malicous")
+        self.closers = ['>','">',"'>","/>"]
+        self.tags = read_vocab("tag")
+        self.data = [self.texts,self.spaces,self.events,self.payloads,self.tags,self.closers]
+
+     def get_simple_payload(self):
+        print(type(self.tags))
+        payload = self.texts + random.choice(self.tags) +self.spaces+ random.choice(self.events)+random.choice(self.payloads)+random.choice(self.closers)
+        return payload
+     
+p = grammer()
+print(p.get_simple_payload())
