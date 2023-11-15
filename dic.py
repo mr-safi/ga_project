@@ -68,7 +68,7 @@ malicous = read_vocab("malicous")
 
 class grammer:
      def __init__(self):
-        self.texts = "abc "
+        self.texts = "abc"
         self.spaces = ' ' 
         self.events = read_vocab("event")
         self.asigns =  ['=']
@@ -78,7 +78,7 @@ class grammer:
         self.data = [self.texts,self.spaces,self.events,self.payloads,self.tags,self.closers]
 
      def get_simple_payload(self):
-        print(type(self.tags))
+        # print(type(self.tags))
         payload = self.texts + random.choice(self.tags) +self.spaces+ random.choice(self.events)+random.choice(self.payloads)+random.choice(self.closers)
         return payload
      

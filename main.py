@@ -1,5 +1,5 @@
 # This is a sample Python script.
-from dic import read_vocab
+# from dic import read_vocab
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and
 import numpy as np
