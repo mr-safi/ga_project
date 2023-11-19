@@ -1,18 +1,36 @@
-# This is a sample Python script.
-# from dic import read_vocab
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and
+from dic import *
 import numpy as np
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# ..................................................
+POPULATION_SIZE = 200
+population = []
+
+#  feedback from mode
+#  0  is benign payload 
+#  except of modle , multuple paramater must effecct to fittness
+def fittness_calc(payload):
+    score = random.uniform(0 , 1)
+    return score
 
 
-# Press the green button in the gutter to run the script.
+# Genetic Algorithm flow:
+def ga_algo():
+    gram = grammer()
+
+    # create initial population (generation 0):
+    for i in range(POPULATION_SIZE):
+        population.append(gram.get_simple_payload())
+        # print(i)
+    # print (population)
+
+    # fittness calc
+    for i in population:
+        print(fittness_calc(i))
+
+# test
+# print(tags)
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    ga_algo()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
-
+print(fittness_calc("s"))

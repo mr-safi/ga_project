@@ -82,5 +82,5 @@ class grammer:
         payload = self.texts + random.choice(self.tags) +self.spaces+ random.choice(self.events)+random.choice(self.payloads)+random.choice(self.closers)
         return payload
      
-p = grammer()
-print(p.get_simple_payload())
+# p = grammer()
+# print(p.get_simple_payload())
