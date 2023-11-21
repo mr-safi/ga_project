@@ -7,8 +7,8 @@ class Token():
     # token type
     eof = 'END-OF-FILE'
     tag = 'TAG'
-    number = 'NUMBER'
-    xss = 'Malicous'
+    text = 'TEXT'
+    xss = 'MALICOUS'
     attribut = 'ATTRIBUTE'
     end_tag = 'END_TAG'
     event = "EVENT"
@@ -199,16 +199,21 @@ class Lexer(object):
                     match += char
                     char = self.get_next_char()
                     flag_t = True
-                # if flag_t:
-                #     token = Token(Token.xss, match, self.lines[self.line_no], self.line_no, self.line_pos)
-                #     self.tokens.append(token)
-                #     print (token)
+                if flag_t:
+                    if match.__contains__('alert') or match.__contains__('prompt') or match.__contains__('console.log') or match.__contains__('cookie'):
+                        token = Token(Token.xss, match, self.lines[self.line_no], self.line_no, self.line_pos)
+                    else:
+                        token = Token(Token.text, match, self.lines[self.line_no], self.line_no, self.line_pos)
+                    self.tokens.append(token)
+                    print (token)
                 self.state=0
+
             if self.state ==99:
                 print("errorrr")
                 self.this_is_Error(char)
                 
                 
 
-lex = Lexer('><img src=https://www.google.com onerror="javascript:alert(1)" ><div> s</div>')
-print(lex.tokenise())
+lex = Lexer('"><img src=https://www.google.com onerror="javascript:alert(1)" ><script> alert(1)</script>"')
+# lex = Lexer('<script > alert(1) </script>')
+lex.tokenise()
