@@ -83,4 +83,4 @@ class grammer:
         return payload
      
 # p = grammer()
-# print(p.get_simple_payload())
+# print(p.events)

@@ -1,6 +1,8 @@
 from enum import Enum
 import string
-
+from dic import *
+gramm = grammer()
+# print(gramm.events)
 class Token():
     # token type
     eof = 'END-OF-FILE'
@@ -8,11 +10,9 @@ class Token():
     number = 'NUMBER'
     xss = 'Malicous'
     attribut = 'ATTRIBUTE'
-    st_braket = 'START_BRAKET'
     end_tag = 'END_TAG'
-    seprator = "SEPRATOR"
-    keywords = ['if', 'else', 'while', 'for', 'def', 'class', 'self', 'in', 'return', 'import', 'print', '__init__',
-                'lambda', 'break']
+    event = "EVENT"
+
 
     def __init__(self, type, value, line, line_no, line_pos):
         self.type = type
@@ -26,7 +26,8 @@ class Token():
     
 class Lexer(object):
     # indentable_keywords = ['']
-    invalid_str = "\'\"#$~?"
+    end_tag= ['>','">',"'>","/"]
+    qout_str = "\'\""
     xss_char="\'\"\:()"
     other_Symbol = '\,\:\;'
     eof_sign = '$'
@@ -66,7 +67,8 @@ class Lexer(object):
     def tokenise(self):
         char = self.get_next_char()
         # while char != Lexer.eof_sign:
-        while self.cursor < len(self.code):
+        while self.cursor < len(self.code)+1:
+            # .................................... MAin Loop
             # print(self.state)
             flag = True
             if char in Lexer.whitespace:
@@ -88,11 +90,14 @@ class Lexer(object):
                     self.state = 2
                 elif char == '=':
                     self.state = 3
-                elif char == '>':
+                elif char in Lexer.end_tag:
                     self.state = 4
+                elif char in Lexer.whitespace+Lexer.qout_str:
+                    char = self.get_next_char()
+                    self.state=0
                 else:
-                    print("other")
-                    self.state = 4
+                    # print("other")
+                    self.state = 99
             #
             # ---------- state = 1 ----------# tag recongitioan
             if self.state == 1:
@@ -109,6 +114,9 @@ class Lexer(object):
                     self.tokens.append(token)
                     print (token)
                 self.state=0
+                # print(char,self.state)
+                if char in Lexer.end_tag:
+                    self.state=4
                 # if match in Token.keywords:
                 #     token.type = Token.keyword
 
@@ -116,16 +124,21 @@ class Lexer(object):
                 #     if self.cursor < len(self.code):
                 #         self.this_is_Error(char)
 
+            #................................attribute.. and event
             if self.state == 2:
-                match = char
-                char = self.get_next_char()
+                match = ''
+                # char = self.get_next_char()
                 flag_t = False
                 while char in (string.ascii_letters + string.digits):
                     match += char
                     char = self.get_next_char()
                     flag_t = True
                 if flag_t:
-                    token = Token(Token.attribut, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
+                    if match+char in gramm.events:
+                        token = Token(Token.event, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
+                    else:
+                        token = Token(Token.attribut, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
+
                     self.tokens.append(token)
                     print (token)
                 self.state=0
@@ -143,14 +156,39 @@ class Lexer(object):
                     self.tokens.append(token)
                     print (token)
                 self.state=0
-                # return 0
+
+            #.........................end Tag........ 
             if self.state == 4:
                 match=char
+                # print("s4")
                 token = Token(Token.end_tag, match, self.lines[self.line_no], self.line_no, self.line_pos)
                 self.tokens.append(token)
                 print (token)
                 char = self.get_next_char()
                 self.state =0
+                # print(self.tokens[-1])
+                while char ==' ':
+                    char =self.get_next_char()
+                if char in (string.ascii_letters+string.digits):
+                    self.state=5
+            #........................other........ 
+            if self.state==5:
+                match=''
+                # char = self.get_next_char()
+                flag_t = False
+                while char in (string.ascii_letters + string.digits+Lexer.xss_char):
+                    match += char
+                    char = self.get_next_char()
+                    flag_t = True
+                # if flag_t:
+                #     token = Token(Token.xss, match, self.lines[self.line_no], self.line_no, self.line_pos)
+                #     self.tokens.append(token)
+                #     print (token)
+                self.state=0
+            if self.state ==99:
+                print("errorrr")
+                return 0
+                
 
-lex = Lexer('<img src=x adf=alert(2) >')
+lex = Lexer('<iframe onload iframe onload="javascript:javascript:alert(1)">')
 print(lex.tokenise())
