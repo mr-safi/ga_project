@@ -26,9 +26,10 @@ class Token():
     
 class Lexer(object):
     # indentable_keywords = ['']
-    end_tag= ['>','">',"'>","/"]
+    end_tag= ['>','">',"'>"]
+    contune = [' ','=']
     qout_str = "\'\""
-    xss_char="\'\"\:()"
+    xss_char="\'\"\:()/.@"
     other_Symbol = '\,\:\;'
     eof_sign = '$'
     whitespace = ' \t\n'
@@ -67,8 +68,10 @@ class Lexer(object):
     def tokenise(self):
         char = self.get_next_char()
         # while char != Lexer.eof_sign:
-        while self.cursor < len(self.code)+1:
+        of =0
+        while self.cursor < len(self.code)+1 and of <100:
             # .................................... MAin Loop
+            of += 1
             # print(self.state)
             flag = True
             if char in Lexer.whitespace:
@@ -92,15 +95,18 @@ class Lexer(object):
                     self.state = 3
                 elif char in Lexer.end_tag:
                     self.state = 4
+                elif char =="\:":
+                    self.state = 3
                 elif char in Lexer.whitespace+Lexer.qout_str:
                     char = self.get_next_char()
                     self.state=0
                 else:
                     # print("other")
-                    self.state = 99
+                    self.state = 0
             #
             # ---------- state = 1 ----------# tag recongitioan
             if self.state == 1:
+                # print(char)
                 match = char
                 flag_tag = False
                 char = self.get_next_char()
@@ -114,9 +120,11 @@ class Lexer(object):
                     self.tokens.append(token)
                     print (token)
                 self.state=0
-                # print(char,self.state)
-                if char in Lexer.end_tag:
+                if char=='/':
                     self.state=4
+                # print(char,self.state)
+                # if char in Lexer.end_tag:
+                    # self.state=4
                 # if match in Token.keywords:
                 #     token.type = Token.keyword
 
@@ -142,12 +150,13 @@ class Lexer(object):
                     self.tokens.append(token)
                     print (token)
                 self.state=0
-            # ........................xss malicous code.........
+            # ........................xss malicous code.(after =)........
             if self.state == 3:
                 match = ''
-                char = self.get_next_char()
                 flag_t = False
-                while char in (string.ascii_letters + string.digits+Lexer.xss_char):
+                char = self.get_next_char()
+                # while char in (string.ascii_letters + string.digits+Lexer.xss_char):
+                while char not in (Lexer.whitespace):
                     match += char
                     char = self.get_next_char()
                     flag_t = True
@@ -161,6 +170,16 @@ class Lexer(object):
             if self.state == 4:
                 match=char
                 # print("s4")
+                if char =='/':
+                    match= '<'+char
+                    char = self.get_next_char()
+                    while char in Lexer.whitespace:
+                        char =self.get_next_char()
+                    while char in string.ascii_letters:
+                        match += char
+                        char = self.get_next_char()
+                    if char=='>':
+                        match += char
                 token = Token(Token.end_tag, match, self.lines[self.line_no], self.line_no, self.line_pos)
                 self.tokens.append(token)
                 print (token)
@@ -187,8 +206,9 @@ class Lexer(object):
                 self.state=0
             if self.state ==99:
                 print("errorrr")
-                return 0
+                self.this_is_Error(char)
+                
                 
 
-lex = Lexer('<iframe onload iframe onload="javascript:javascript:alert(1)">')
+lex = Lexer('><img src=https://www.google.com onerror="javascript:alert(1)" ><div> s</div>')
 print(lex.tokenise())
