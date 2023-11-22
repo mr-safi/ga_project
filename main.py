@@ -2,6 +2,8 @@ from dic import *
 import numpy as np
 from htmlparser import Lexer
 from individual import Individual
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # lex = Lexer('<script src="/\%(jscript)s"></script>')
 # lex.tokenise()
@@ -14,8 +16,9 @@ from individual import Individual
 POPULATION_SIZE = 10
 population = []
 MAX_GENERATIONS = 100
-MAX_FITTNESS = 1
-
+MAX_FITTNESS = 0.999
+maxFitnessValues = []
+meanFitnessValues = []
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
@@ -44,25 +47,68 @@ def ga_algo():
         population.append(ind)
  
     # test inital population 
-    print (*population,sep='\n')
+    # print (*population,sep='\n')
+    # ................................................
 
 
+    # .....................................................fittness calc
+    for ind in population:
+        fitness = fittness_calc(ind.get_payload())#///...................... uncomment this
+        # print(fitness,ind.get_payload())
+        ind.fitness = fitness
+        #  is real necessary this?
+        fitnessValues.append(fitness)
 
-    # fittness calc
-    for fitscore in population:
-        # print(fittness_calc(fitscore))#///...................... uncomment this
-        fitnessValues.append(fittness_calc(fitscore))
-
-
+    # print (*population,sep='\n')
+    # ..............................................
     
-    # main evolutionary loop:
+
+
+    # ......................................................main evolutionary loop:
     # stop if max fitness value reached the known max value
     # OR if number of generations exceeded the preset value:
-    while max(fitnessValues) < MAX_FITTNESS and generationCounter < MAX_GENERATIONS:
+    while generationCounter < MAX_GENERATIONS:
+        maxFitness = max(fitnessValues)
+        # meanFitness = sum(fitnessValues) / len(population)
+        # maxFitnessValues.append(maxFitness)
+        # meanFitnessValues.append(meanFitness)
+
+        if maxFitness >= MAX_FITTNESS:
+            break
+
+        #........select 2winners
+
+        # .........mutate
+
+
+
+        #........ crossover
+
+
+        #.......calculate fitneess 
+
+
+
+        # ......update population
+
+        # ... last way is encoding:(
+
+
+
+
+
+
         generationCounter = generationCounter +1
-    # print(max(fitnessValues))
-
-
+        print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
+    
+    # Genetic Algorithm is done - plot statistics:
+    # sns.set_style("whitegrid")
+    # plt.plot(maxFitnessValues, color='red')
+    # plt.plot(meanFitnessValues, color='green')
+    # plt.xlabel('Generation')
+    # plt.ylabel('Max / Average Fitness')
+    # plt.title('Max and Average Fitness over Generations')
+    # plt.show()
 
 
 

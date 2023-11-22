@@ -22,6 +22,15 @@ class Individual():
         self.numtags =count_tag
         self.numevent = count_event_or_attr
         self.numxss = count_xss
+    
+    def get_payload(self):
+        mpayload = ''
+        for i in range(len(self.elements)):
+            if self.puzzelorder[i] in [1 ,2 ,3]:
+                mpayload = mpayload +' ' +self.elements[i]
+            else:
+                mpayload += self.elements[i]
+        return mpayload
 
     def __str__(self):
         return 'Fitness {0}: {1} - {2}'.format(self.fitness, self.puzzelorder,self.elements).ljust(10) 
@@ -32,3 +41,4 @@ class Individual():
 # ind = Individual(elment=c,puzleorder=pord)
 # # ind.update()
 # print(ind)
+# ind.get_payload()
