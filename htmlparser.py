@@ -3,15 +3,24 @@ import string
 from dic import *
 gramm = grammer()
 # print(gramm.events)
+
+# ..............we have 6 positions
+# tag : 1
+# attr : 2
+# event : 3
+# xss : 4
+# closed tag : 5
+
+# end of file : 6
 class Token():
     # token type
+    event = 3
+    tag = 1
+    text = 4
+    xss = 4
+    attribut = 2
+    end_tag = 5
     eof = 'END-OF-FILE'
-    tag = 'TAG'
-    text = 'TEXT'
-    xss = 'MALICOUS'
-    attribut = 'ATTRIBUTE'
-    end_tag = 'END_TAG'
-    event = "EVENT"
 
 
     def __init__(self, type, value, line, line_no, line_pos):
@@ -22,7 +31,9 @@ class Token():
         self.line_no = line_no + 1
 
     def __str__(self):
-        return '{0}:{1}'.format(self.line_no, self.line_pos).ljust(10) + self.type.ljust(15) + self.value
+        # return '{0}:{1}'.format(self.line_no, self.line_pos).ljust(10) + self.type.ljust(15) + self.value
+        return f'{self.type} , {self.value}'
+    
     
 class Lexer(object):
     # indentable_keywords = ['']
@@ -118,7 +129,7 @@ class Lexer(object):
                 if flag_tag:
                     token = Token(Token.tag, match, self.lines[self.line_no], self.line_no, self.line_pos)
                     self.tokens.append(token)
-                    print (token)
+                    # print (token)
                 self.state=0
                 if char=='/':
                     self.state=4
@@ -148,7 +159,7 @@ class Lexer(object):
                         token = Token(Token.attribut, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
 
                     self.tokens.append(token)
-                    print (token)
+                    # print (token)
                 self.state=0
             # ........................xss malicous code.(after =)........
             if self.state == 3:
@@ -163,7 +174,7 @@ class Lexer(object):
                 if flag_t:
                     token = Token(Token.xss, match, self.lines[self.line_no], self.line_no, self.line_pos)
                     self.tokens.append(token)
-                    print (token)
+                    # print (token)
                 self.state=0
 
             #.........................end Tag........ 
@@ -182,7 +193,7 @@ class Lexer(object):
                         match += char
                 token = Token(Token.end_tag, match, self.lines[self.line_no], self.line_no, self.line_pos)
                 self.tokens.append(token)
-                print (token)
+                # print (token)
                 char = self.get_next_char()
                 self.state =0
                 # print(self.tokens[-1])
@@ -205,15 +216,32 @@ class Lexer(object):
                     else:
                         token = Token(Token.text, match, self.lines[self.line_no], self.line_no, self.line_pos)
                     self.tokens.append(token)
-                    print (token)
+                    # print (token)
                 self.state=0
 
             if self.state ==99:
                 print("errorrr")
                 self.this_is_Error(char)
-                
-                
+        # return self.tokens
+        
+    def get_tokens_type(self):
+        temp = []
+        for i in self.tokens:
+            temp.append(i.type)
+        return temp
+    
+    def get_tokens_value(self):
+        temp = []
+        for i in self.tokens:
+            temp.append(i.value)
+        return temp
 
-lex = Lexer('"><img src=https://www.google.com onerror="javascript:alert(1)" ><script> alert(1)</script>"')
-# lex = Lexer('<script > alert(1) </script>')
-lex.tokenise()
+
+# lex = Lexer('"><img src=https://www.google.com onerror="javascript:alert(1)" ><script> alert(1)</script>"')
+# # lex = Lexer('<script > alert(1) </script>')
+# lex.tokenise()
+# toktype = lex.get_tokens_type()
+# tokValue = lex.get_tokens_value()
+
+# print(toktype)
+# print(tokValue)

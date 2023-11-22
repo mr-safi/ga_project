@@ -1,6 +1,13 @@
 from dic import *
 import numpy as np
+from htmlparser import Lexer
 
+lex = Lexer('"><img src=https://www.google.com onerror="javascript:alert(1)" ><script> alert(1)</script>"')
+lex.tokenise()
+toktype = lex.get_tokens_type()
+tokValue = lex.get_tokens_value()
+print(tokValue)
+print(toktype)
 
 # ..................................................
 POPULATION_SIZE = 200
@@ -34,7 +41,7 @@ def ga_algo():
 
     # fittness calc
     for fitscore in population:
-        print(fittness_calc(fitscore))
+        # print(fittness_calc(fitscore))////////////...................... uncomment this
         fitnessValues.append(fittness_calc(fitscore))
 
 
