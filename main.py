@@ -1,6 +1,7 @@
 from dic import *
 import numpy as np
 from htmlparser import Lexer
+from individual import Individual
 
 # lex = Lexer('<script src="/\%(jscript)s"></script>')
 # lex.tokenise()
@@ -14,8 +15,7 @@ POPULATION_SIZE = 10
 population = []
 MAX_GENERATIONS = 100
 MAX_FITTNESS = 1
-array_payload_lexer_value =[]
-array_payload_lexer_type =[]
+
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
@@ -38,16 +38,14 @@ def ga_algo():
     # ..............................create initial population (generation 0):
     for i in range(POPULATION_SIZE):
         p = gram.get_simple_payload()
-        population.append(p)
         lx = Lexer(p)
         lx.tokenise()
-        array_payload_lexer_type.append(lx.get_tokens_type())
-        array_payload_lexer_value.append(lx.get_tokens_value())
-
+        ind = Individual(elment=lx.get_tokens_value() , puzleorder=lx.get_tokens_type())
+        population.append(ind)
+ 
     # test inital population 
-    # print (*population,sep='\n')
-    print(*array_payload_lexer_type , sep='\n')
-    print(*array_payload_lexer_value , sep='\n')
+    print (*population,sep='\n')
+
 
 
     # fittness calc

@@ -73,7 +73,8 @@ class grammer:
         self.events = read_vocab("event")
         self.asigns =  ['=']
         self.payloads = read_vocab("malicous")
-        self.closers = ['>','">',"'>","/>"]
+        # self.closers = ['>','">',"'>","/>"]
+        self.closers = ['>','">',"'>"]
         self.tags = read_vocab("tag")
         self.data = [self.texts,self.spaces,self.events,self.payloads,self.tags,self.closers]
 

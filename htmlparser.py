@@ -170,7 +170,7 @@ class Lexer(object):
                 flag_t = False
                 char = self.get_next_char()
                 # while char in (string.ascii_letters + string.digits+Lexer.xss_char):
-                while char not in (Lexer.whitespace +'$>'):
+                while char not in (Lexer.whitespace +'$>/'):
                     match += char
                     char = self.get_next_char()
                     flag_t = True
