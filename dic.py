@@ -79,7 +79,7 @@ class grammer:
 
      def get_simple_payload(self):
         # print(type(self.tags))
-        payload = self.texts + random.choice(self.tags) +self.spaces+ random.choice(self.events)+random.choice(self.payloads)+random.choice(self.closers)
+        payload = random.choice(self.tags) +self.spaces+ random.choice(self.events)+random.choice(self.payloads)+random.choice(self.closers)
         return payload
      
 # p = grammer()

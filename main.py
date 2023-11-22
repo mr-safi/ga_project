@@ -2,18 +2,20 @@ from dic import *
 import numpy as np
 from htmlparser import Lexer
 
-lex = Lexer('"><img src=https://www.google.com onerror="javascript:alert(1)" ><script> alert(1)</script>"')
-lex.tokenise()
-toktype = lex.get_tokens_type()
-tokValue = lex.get_tokens_value()
-print(tokValue)
-print(toktype)
+# lex = Lexer('<script src="/\%(jscript)s"></script>')
+# lex.tokenise()
+# toktype = lex.get_tokens_type()
+# tokValue = lex.get_tokens_value()
+# print(tokValue) 
+# print(toktype)
 
 # ..................................................
-POPULATION_SIZE = 200
+POPULATION_SIZE = 10
 population = []
 MAX_GENERATIONS = 100
 MAX_FITTNESS = 1
+array_payload_lexer_value =[]
+array_payload_lexer_type =[]
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
@@ -33,15 +35,24 @@ def ga_algo():
     gram = grammer()
     generationCounter = 0
 
-    # create initial population (generation 0):
+    # ..............................create initial population (generation 0):
     for i in range(POPULATION_SIZE):
-        population.append(gram.get_simple_payload())
-        # print(i)
-    # print (population)
+        p = gram.get_simple_payload()
+        population.append(p)
+        lx = Lexer(p)
+        lx.tokenise()
+        array_payload_lexer_type.append(lx.get_tokens_type())
+        array_payload_lexer_value.append(lx.get_tokens_value())
+
+    # test inital population 
+    # print (*population,sep='\n')
+    print(*array_payload_lexer_type , sep='\n')
+    print(*array_payload_lexer_value , sep='\n')
+
 
     # fittness calc
     for fitscore in population:
-        # print(fittness_calc(fitscore))////////////...................... uncomment this
+        # print(fittness_calc(fitscore))#///...................... uncomment this
         fitnessValues.append(fittness_calc(fitscore))
 
 
