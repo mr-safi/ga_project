@@ -13,23 +13,29 @@ import seaborn as sns
 # print(toktype)
 
 # ..................................................
-POPULATION_SIZE = 10
+POPULATION_SIZE = 20
 population = []
-MAX_GENERATIONS = 100
-MAX_FITTNESS = 0.999
+MAX_GENERATIONS = 4
+MAX_FITTNESS = 14.999
 maxFitnessValues = []
 meanFitnessValues = []
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
 
+
 #  feedback from model
 #  0  is benign payload 
 #  except of model , multiple paramater must effecct to fittness
 #  for example number of nested tag 
 #  and number of attributes
-def fittness_calc(payload):
-    score = random.uniform(0 , 1)
+#  xssCalssifer model: 0 is benign payload and 1 is xss 
+def fitness_calc(individual):
+
+    payload = individual.get_payload()
+    otherparam = individual.numtags + individual.numevent + individual.numxss
+    modelFeedback = random.uniform(0.7 , 0.9)
+    score = (1-modelFeedback)+ otherparam*0.02
     return score
 
 
@@ -53,10 +59,10 @@ def ga_algo():
 
     # .....................................................fittness calc
     for ind in population:
-        fitness = fittness_calc(ind.get_payload())#///...................... uncomment this
+        fitness = fitness_calc(ind)#///...................... uncomment this
         # print(fitness,ind.get_payload())
         ind.fitness = fitness
-        #  is real necessary this?
+        #  is realy necessary this?yes
         fitnessValues.append(fitness)
 
     # print (*population,sep='\n')
@@ -76,13 +82,20 @@ def ga_algo():
         if maxFitness >= MAX_FITTNESS:
             break
 
-        #........select 2winners
+        # apply the selection operator, to select the next generation's individuals:
+        #........select winners (8 offspring)
+        #  sort by fittness
+        population.sort(key=lambda x: x.fitness,reverse=True)
+        newpopulation = population[:8]
 
-        # .........mutate
-
+        print (*newpopulation,sep='\n')
 
 
         #........ crossover
+
+
+        # .........mutate
+
 
 
         #.......calculate fitneess 
@@ -91,7 +104,7 @@ def ga_algo():
 
         # ......update population
 
-        # ... last way is encoding:(
+        # notice: last way is encoding:(
 
 
 
@@ -99,7 +112,7 @@ def ga_algo():
 
 
         generationCounter = generationCounter +1
-        print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
+        # print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
     
     # Genetic Algorithm is done - plot statistics:
     # sns.set_style("whitegrid")
@@ -116,3 +129,5 @@ def ga_algo():
 # print(tags)
 if __name__ == '__main__':
     ga_algo()
+
+# https://www.obitko.com/tutorials/genetic-algorithms/ga-basic-description.php#outline
