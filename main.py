@@ -37,7 +37,21 @@ def fitness_calc(individual):
     modelFeedback = random.uniform(0.7 , 0.9)
     score = (1-modelFeedback)+ otherparam*0.02
     return score
+def crossover(p1,p2):
+    ghaleb =[]
+    parent2=[]
+    if len(p1.elements) > len(p2.elements):
+            ghaleb = p1
+            parent2 = p2
+    else:
+        ghaleb = p2
+        parent2 = p1
 
+    child_Porder = parent2.puzzelorder[0:2]+ghaleb.puzzelorder[2:]
+    child_elenmets = parent2.elements[0:2]+ghaleb.elements[2:]
+    child = Individual(elment=child_elenmets , puzleorder=child_Porder)
+    return child
+    # print("----",child)
 
 # Genetic Algorithm flow:
 def ga_algo():
@@ -87,19 +101,30 @@ def ga_algo():
         #  sort by fittness
         population.sort(key=lambda x: x.fitness,reverse=True)
         newpopulation = population[:8]
-
-        print (*newpopulation,sep='\n')
-
+        population.clear()
 
         #........ crossover
+        # ... must set suitable cross point
+        # ..positiopn 3 4 can be suitable
+        # .. bigest parent must have more element in child
+        parents = random.sample(newpopulation,8)
+        newpopulation.clear()
+        for i in range(0,len(parents)):
+            if i == 7 :
+                break
+            population.append(crossover(parents[i],parents[i+1]))
+        
+        print (*population,sep='\n')
+        print(len(population))
 
-
+            
         # .........mutate
 
 
 
         #.......calculate fitneess 
-
+        # population = newpopulation #.////// soon
+        
 
 
         # ......update population
@@ -112,7 +137,7 @@ def ga_algo():
 
 
         generationCounter = generationCounter +1
-        # print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
+        print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
     
     # Genetic Algorithm is done - plot statistics:
     # sns.set_style("whitegrid")
