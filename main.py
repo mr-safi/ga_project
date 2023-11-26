@@ -13,12 +13,13 @@ import seaborn as sns
 # print(toktype)
 
 # ..................................................
-POPULATION_SIZE = 20
+POPULATION_SIZE = 512
 population = []
-MAX_GENERATIONS = 4
-MAX_FITTNESS = 14.999
+MAX_GENERATIONS = 256
+MAX_FITTNESS = 1.0
 maxFitnessValues = []
 meanFitnessValues = []
+OFFSPRING_POOL_SIZE=256
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
@@ -35,17 +36,19 @@ def fitness_calc(individual):
     payload = individual.get_payload()
     otherparam = individual.numtags + individual.numevent + individual.numxss
     modelFeedback = random.uniform(0.7 , 0.9)
-    score = (1-modelFeedback)+ otherparam*0.02
+    score = (1-modelFeedback)
     return score
+
+
 def crossover(p1,p2):
-    ghaleb =[]
-    parent2=[]
-    if len(p1.elements) > len(p2.elements):
-            ghaleb = p1
-            parent2 = p2
-    else:
-        ghaleb = p2
-        parent2 = p1
+    ghaleb =p2
+    parent2=p1
+    # if len(p1.elements) > len(p2.elements):
+    #         ghaleb = p1
+    #         parent2 = p2
+    # else:
+    #     ghaleb = p2
+    #     parent2 = p1
 
     child_Porder = parent2.puzzelorder[0:2]+ghaleb.puzzelorder[2:]
     child_elenmets = parent2.elements[0:2]+ghaleb.elements[2:]
@@ -84,12 +87,12 @@ def ga_algo():
     
 
 
-    # ......................................................main evolutionary loop:
+    # =================.........============================.........=============================...main evolutionary loop:
     # stop if max fitness value reached the known max value
     # OR if number of generations exceeded the preset value:
     while generationCounter < MAX_GENERATIONS:
         maxFitness = max(fitnessValues)
-        # meanFitness = sum(fitnessValues) / len(population)
+        # meanFitness = sum(fitnessValues) / len(fitnessValues)
         # maxFitnessValues.append(maxFitness)
         # meanFitnessValues.append(meanFitness)
 
@@ -100,46 +103,47 @@ def ga_algo():
         #........select winners (8 offspring)
         #  sort by fittness
         population.sort(key=lambda x: x.fitness,reverse=True)
-        newpopulation = population[:8]
+        newpopulation = population[:OFFSPRING_POOL_SIZE]
         population.clear()
+        # fitnessValues.clear()
+
 
         #........ crossover
         # ... must set suitable cross point
         # ..positiopn 3 4 can be suitable
-        # .. bigest parent must have more element in child
-        parents = random.sample(newpopulation,8)
-        newpopulation.clear()
+        parents = random.sample(newpopulation,OFFSPRING_POOL_SIZE)
         for i in range(0,len(parents)):
-            if i == 7 :
+            if i == (len(parents)-1) :
+                population.append(crossover(parents[i],parents[0]))
                 break
             population.append(crossover(parents[i],parents[i+1]))
         
-        print (*population,sep='\n')
-        print(len(population))
-
+        parents.clear()
+        for ind in population:
+            fitness = fitness_calc(ind)#///...................... uncomment this
+            ind.fitness = fitness
+            fitnessValues.append(fitness)
             
-        # .........mutate
+        # .........mutation
+          
 
 
-
-        #.......calculate fitneess 
-        # population = newpopulation #.////// soon
-        
-
-
-        # ......update population
 
         # notice: last way is encoding:(
 
 
 
-
-
+        #.......calculate fitneess 
+        # ......update population
+        population.extend(newpopulation)
+        print (*population,sep='\n')
+        newpopulation.clear()
 
         generationCounter = generationCounter +1
         print("Generation {} : Max Fitness = {}".format(generationCounter, maxFitness))
     
-    # Genetic Algorithm is done - plot statistics:
+
+    # print(len(fitnessValues))
     # sns.set_style("whitegrid")
     # plt.plot(maxFitnessValues, color='red')
     # plt.plot(meanFitnessValues, color='green')
