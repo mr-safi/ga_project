@@ -1,3 +1,5 @@
+import random
+
 from dic import *
 import numpy as np
 from htmlparser import Lexer
@@ -30,12 +32,12 @@ fitnessValues = []
 #  except of model , multiple paramater must effecct to fittness
 #  for example number of nested tag 
 #  and number of attributes
-#  xssCalssifer model: 0 is benign payload and 1 is xss 
+#  xssCalssifer model: 0 is benign payload and 1 is xss
 def fitness_calc(individual):
 
     payload = individual.get_payload()
     otherparam = individual.numtags + individual.numevent + individual.numxss
-    modelFeedback = random.uniform(0.7 , 0.9)
+    modelFeedback = random.uniform(0.0 , 0.1)
     score = (1-modelFeedback)
     return score
 
@@ -49,9 +51,9 @@ def crossover(p1,p2):
     # else:
     #     ghaleb = p2
     #     parent2 = p1
-
-    child_Porder = parent2.puzzelorder[0:2]+ghaleb.puzzelorder[2:]
-    child_elenmets = parent2.elements[0:2]+ghaleb.elements[2:]
+    croossover_point = random.randint(2,3)
+    child_Porder = parent2.puzzelorder[0:croossover_point]+ghaleb.puzzelorder[croossover_point:]
+    child_elenmets = parent2.elements[0:croossover_point]+ghaleb.elements[croossover_point:]
     child = Individual(elment=child_elenmets , puzleorder=child_Porder)
     return child
     # print("----",child)
