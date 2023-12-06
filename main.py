@@ -15,13 +15,15 @@ import seaborn as sns
 # print(toktype)
 
 # ..................................................
-POPULATION_SIZE = 512
+POPULATION_SIZE = 32
 population = []
 MAX_GENERATIONS = 256
 MAX_FITTNESS = 1.0
 maxFitnessValues = []
 meanFitnessValues = []
-OFFSPRING_POOL_SIZE=256
+OFFSPRING_POOL_SIZE=16
+best_order = ['5145', '51345']
+gram = grammer()
 
 # fitnessValues = [individual.fitness.values[0] for individual in population]
 fitnessValues = []
@@ -34,23 +36,25 @@ fitnessValues = []
 #  and number of attributes
 #  xssCalssifer model: 0 is benign payload and 1 is xss
 def fitness_calc(individual):
-
+    order =0.0
+    puzzorder = individual.puzzelorder
+    puzzorder = ''.join(map(str,puzzorder))
+    if puzzorder in best_order:
+        order=0.01
     payload = individual.get_payload()
     otherparam = individual.numtags + individual.numevent + individual.numxss
-    modelFeedback = random.uniform(0.0 , 0.1)
-    score = (1-modelFeedback)
+    modelFeedback = random.uniform(0.012 , 0.1)
+    score = (1-modelFeedback) + order + otherparam*0.002
     return score
+
+def mutate(indi):
+    # print(indi)
+    indi =indi
 
 
 def crossover(p1,p2):
     ghaleb =p2
     parent2=p1
-    # if len(p1.elements) > len(p2.elements):
-    #         ghaleb = p1
-    #         parent2 = p2
-    # else:
-    #     ghaleb = p2
-    #     parent2 = p1
     croossover_point = random.randint(2,3)
     child_Porder = parent2.puzzelorder[0:croossover_point]+ghaleb.puzzelorder[croossover_point:]
     child_elenmets = parent2.elements[0:croossover_point]+ghaleb.elements[croossover_point:]
@@ -60,7 +64,6 @@ def crossover(p1,p2):
 
 # Genetic Algorithm flow:
 def ga_algo():
-    gram = grammer()
     generationCounter = 0
 
     # ..............................create initial population (generation 0):
@@ -120,20 +123,26 @@ def ga_algo():
                 break
             population.append(crossover(parents[i],parents[i+1]))
         
+
+        # .........mutation
+        for ind in population:
+            mutate(ind)
+
         parents.clear()
         for ind in population:
             fitness = fitness_calc(ind)#///...................... uncomment this
             ind.fitness = fitness
             fitnessValues.append(fitness)
             
-        # .........mutation
+
+
           
 
 
 
         # notice: last way is encoding:(
 
-
+        
 
         #.......calculate fitneess 
         # ......update population
