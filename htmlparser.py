@@ -106,11 +106,11 @@ class Lexer(object):
                 elif char in string.ascii_letters:
                     self.state = 2
                 elif char == '=':
-                    self.state = 3
-                elif char in Lexer.end_tag:
                     self.state = 4
+                elif char in Lexer.end_tag:
+                    self.state = 5
                 elif char =="\:":
-                    self.state = 3
+                    self.state = 4
                 elif char in Lexer.whitespace+Lexer.qout_str:
                     char = self.get_next_char()
                     self.state=0
@@ -120,7 +120,6 @@ class Lexer(object):
             #
             # ---------- state = 1 ----------# tag recongitioan
             if self.state == 1:
-                # print(char)
                 match = char
                 flag_tag = False
                 char = self.get_next_char()
@@ -135,7 +134,7 @@ class Lexer(object):
                     self.prt_token(token)
                 self.state=0
                 if char=='/':
-                    self.state=4
+                    self.state=5
                 # print(char,self.state)
                 # if char in Lexer.end_tag:
                     # self.state=4
@@ -151,26 +150,40 @@ class Lexer(object):
                 match = ''
                 # char = self.get_next_char()
                 flag_t = False
-                while char in (string.ascii_letters + string.digits+':'):
+                while char in (string.ascii_letters + string.digits+'_-:'):
                     match += char
                     char = self.get_next_char()
                     flag_t = True
+                while char in Lexer.whitespace:
+                    char = self.get_next_char()
+                
                 if flag_t:
+                    temp=''
+                    if char =='=':
+                        temp = char
+                        
                     if match+char in gramm.events:
-                        token = Token(Token.event, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
+                        token = Token(Token.event, match+temp, self.lines[self.line_no], self.line_no, self.line_pos)
                     else:
-                        token = Token(Token.attribut, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
+                        token = Token(Token.attribut, match+temp, self.lines[self.line_no], self.line_no, self.line_pos)
 
                     self.tokens.append(token)
                     self.prt_token(token)
                 self.state=0
             # ........................xss malicous code.(after =)........
-            if self.state == 3:
+            if self.state == 4:
                 match = ''
                 flag_t = False
                 char = self.get_next_char()
                 # while char in (string.ascii_letters + string.digits+Lexer.xss_char):
-                while char not in (Lexer.whitespace +'$>/'):
+
+                while char not in (Lexer.whitespace +'$><'):
+                    if char =="(":
+                        match+=char
+                        char = self.get_next_char()
+                        while char !=')':
+                            match+=char
+                            char = self.get_next_char()
                     match += char
                     char = self.get_next_char()
                     flag_t = True
@@ -181,20 +194,19 @@ class Lexer(object):
                 self.state=0
 
             #.........................end Tag........ 
-            if self.state == 4:
-                match=char
+            if self.state == 5:
+                match=''
                 # print("s4")
                 if char =='/':
                     match= '<'+char
                     char = self.get_next_char()
                     while char in Lexer.whitespace:
                         char =self.get_next_char()
-                    while char in string.ascii_letters:
+                    while char not in Lexer.end_tag:
                         match += char
                         char = self.get_next_char()
-                    if char=='>':
-                        match += char
-                token = Token(Token.end_tag, match, self.lines[self.line_no], self.line_no, self.line_pos)
+
+                token = Token(Token.end_tag, match+char, self.lines[self.line_no], self.line_no, self.line_pos)
                 self.tokens.append(token)
                 self.prt_token(token)
                 char = self.get_next_char()
@@ -203,13 +215,19 @@ class Lexer(object):
                 while char ==' ':
                     char =self.get_next_char()
                 if char in (string.ascii_letters+string.digits):
-                    self.state=5
+                    self.state=6
             #........................other........ 
-            if self.state==5:
+            if self.state==6:
                 match=''
                 # char = self.get_next_char()
                 flag_t = False
-                while char in (string.ascii_letters + string.digits+Lexer.xss_char):
+                while char not in (Lexer.whitespace +'$><'):
+                    if char =="(":
+                        match+=char
+                        char = self.get_next_char()
+                        while char !=')':
+                            match+=char
+                            char = self.get_next_char()
                     match += char
                     char = self.get_next_char()
                     flag_t = True
@@ -243,8 +261,8 @@ class Lexer(object):
         x=tokem
         # print (x)
 
-# lex = Lexer('"><img src=xxx:x onerror=javascript:alert(1)>')
-# # lex = Lexer('<script > alert(1) </script>')
+# lex = Lexer('"><img src dvd =xxx:x onerror  =javascript:alert("dsd1   ")></img><p>alert("c ddf ")</p>')
+# lex = Lexer("<script>alert('sd' )</script>")
 # lex.tokenise()
 # toktype = lex.get_tokens_type()
 # tokValue = lex.get_tokens_value()
