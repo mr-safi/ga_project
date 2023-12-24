@@ -6,7 +6,7 @@ list_p = []
 for index, row in df.iterrows():
     payload= row[0]
     p=urllib.parse.unquote(payload)
-    # print(p)
+    # print(len(p))
     list_p.append(p)
 
 print("----- number of all payload: ",len(list_p))

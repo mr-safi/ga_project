@@ -18,7 +18,7 @@ import seaborn as sns
 POPULATION_SIZE = 32
 population = []
 MAX_GENERATIONS = 256
-MAX_FITTNESS = 1.0
+MAX_FITTNESS = 2.0
 maxFitnessValues = []
 meanFitnessValues = []
 OFFSPRING_POOL_SIZE=16
@@ -38,9 +38,8 @@ fitnessValues = []
 def fitness_calc(individual):
     order =0.0
     puzzorder = individual.puzzelorder
-    puzzorder = ''.join(map(str,puzzorder))
-    if puzzorder in best_order:
-        order=0.01
+    order = gramerr_check(puzzleorder=puzzorder)
+    print("----------------",puzzorder,order,"----------------------")
     payload = individual.get_payload()
     otherparam = individual.numtags + individual.numevent + individual.numxss
     modelFeedback = random.uniform(0.012 , 0.1)
@@ -50,6 +49,20 @@ def fitness_calc(individual):
 def mutate(indi):
     # print(indi)
     indi =indi
+
+def gramerr_check(puzzleorder):
+    temp =0
+    badscore = -0.25
+    good = 0.0
+    for i in puzzleorder:
+        if i==1 :
+            temp +=1
+        elif i==5:
+            temp -=1
+        # dige ?
+        if temp > 1 :
+            return badscore
+    return good
 
 
 def crossover(p1,p2):
